@@ -1,4 +1,4 @@
 # gitnotes
 
 
-https://github.com/outline/rich-markdown-editor/
+Markdown Editor Library: https://github.com/outline/rich-markdown-editor/
