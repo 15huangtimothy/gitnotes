@@ -1,36 +1,45 @@
 import React from 'react';
 import Axios from 'axios';
 
-type LoginState = {
-    status: string;
-    token: string;
+export type LoginProps = {
+    login_callback: Function;
 };
 
-export default class Login extends React.Component<{}, LoginState> {
-    constructor(props: {}) {
+type LoginState = {
+    status: string;
+};
+
+export default class Login extends React.Component<LoginProps, LoginState> {
+    constructor(props: LoginProps) {
         super(props);
         this.state = {
             status: 'unauthorized',
-            token: null,
         };
     }
 
     componentDidMount() {
+        this.authGitHub();
+    }
+
+    /** Send Gatekeeper request to get Github OAuth token */
+    async authGitHub() {
         const code = new URL(window.location.href).searchParams.get('code');
         if (code) {
-            this.setState({ status: 'loading' });
+            let response = await Axios.get(process.env.REACT_APP_GATEKEEPER_URL + code);
+            window.history.pushState({}, document.title, '/'); // remove github token from url
 
-            Axios.get(process.env.REACT_APP_GATEKEEPER_URL + code).then((response) =>
-                this.setState({
-                    token: response.data.token,
-                    status: 'loaded',
-                })
-            );
+            if (response.data.token) {
+                this.setState({ status: 'authorized' });
+                console.log('Login successful');
+                this.props.login_callback(response.data.token);
+            } else {
+                this.setState({ status: 'error' });
+                console.log('Login error');
+            }
         }
     }
 
     render() {
-        console.log(this.state);
         return (
             <div>
                 <a
@@ -38,11 +47,8 @@ export default class Login extends React.Component<{}, LoginState> {
                 >
                     Login
                 </a>
-                {this.state.status === 'loaded' && this.state.token ? (
-                    <h1>SUCCESS</h1>
-                ) : (
-                    <h1>LOG IN</h1>
-                )}
+                {this.state.status === 'error' && <h2>Login error. Try again</h2>}
+                {this.state.status === 'authorized' && <h2>Login successful</h2>}
             </div>
         );
     }

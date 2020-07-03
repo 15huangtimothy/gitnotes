@@ -2,7 +2,8 @@ import React from 'react';
 import './EditorWrapper.css';
 import Editor from 'rich-markdown-editor';
 import { debounce } from 'lodash';
-import { EditorProps } from '../types';
+
+export type EditorProps = {};
 
 type EditorState = {
     dark: boolean;
