@@ -1,14 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import Editor from 'rich-markdown-editor';
+import EditorWrapper from './EditorWrapper/EditorWrapper';
+import Login from './Login/Login';
 
-function App() {
-    return (
-        <div className="App">
-            <Editor defaultValue="Hello world!" />
-        </div>
-    );
+export type Props = {};
+
+type State = {};
+
+export default class App extends React.Component<Props, State> {
+    render() {
+        return (
+            <div className="App">
+                <Login />
+            </div>
+        );
+    }
 }
-
-export default App;
