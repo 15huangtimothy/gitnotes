@@ -1,8 +1,8 @@
 import React from 'react';
 
-import './FileBrowser.css';
 import FileBrowser, { Icons } from 'react-keyed-file-browser';
-import '../../node_modules/react-keyed-file-browser/dist/react-keyed-file-browser.css';
+import './FileBrowser.css';
+// import '../../node_modules/react-keyed-file-browser/dist/react-keyed-file-browser.css';
 
 export default class NestedFileBrowser extends React.Component {
     constructor(props) {
@@ -17,14 +17,6 @@ export default class NestedFileBrowser extends React.Component {
         links.forEach((link) => {
             link.removeAttribute('href');
             link.removeAttribute('download');
-        });
-        const size = document.querySelectorAll('div.files tbody tr .size');
-        size.forEach((i) => {
-            i.parentNode.removeChild(i);
-        });
-        const modified = document.querySelectorAll('div.files tbody tr .modified');
-        modified.forEach((i) => {
-            i.parentNode.removeChild(i);
         });
     }
 

@@ -3,3 +3,11 @@ div.files tbody a {
     color: black;
     pointer-events: none;
 }
+
+div.files tbody tr .size {
+    display: none;
+}
+
+div.files tbody tr .modified {
+    display: none;
+}
