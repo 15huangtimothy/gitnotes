@@ -1,0 +1,5 @@
+div.files tbody a {
+    text-decoration: none;
+    color: black;
+    pointer-events: none;
+}

@@ -8,6 +8,7 @@ export type Repo = {
 
 export type Directory = {
     name: string;
+    key: string;
     sha: string;
     url: string;
     type: 'dir';
@@ -15,6 +16,7 @@ export type Directory = {
 
 export type File = {
     name: string;
+    key: string;
     sha: string;
     url: string;
     type: 'file';
@@ -77,7 +79,7 @@ export default class GithubWrapper {
     /**
      * Get a list of contents in a specific repository
      * @param r: Repo object
-     * Array of JSON objects representing files and directories
+     * Returbs array of JSON objects representing files and directories
      */
     async getRepoContents(r: Repo) {
         try {
@@ -86,9 +88,9 @@ export default class GithubWrapper {
                     Authorization: this.AUTH_STRING,
                 },
             });
-
-            console.log(this.processFileTree(res.data));
-            return this.processFileTree(res.data);
+            let contents = [];
+            await this.processFileTree(res.data, contents);
+            return contents;
         } catch (error) {
             console.log(error);
             return null;
@@ -96,28 +98,32 @@ export default class GithubWrapper {
     }
 
     /**
-     * Processes items into an array of File and Directory objects
+     * Processes items into File and Directory objects and appends to a given array of Files
      * @param data: Array of JSON objects containing files and directories
      */
-    processFileTree(data: Array<any>) {
-        let contents = [];
-        data.forEach((item) => {
+    async processFileTree(data: Array<any>, contents: Array<File>) {
+        for (const item of data) {
             if (item.type === 'file') {
                 contents.push({
                     name: item.name,
+                    key: item.path,
                     sha: item.sha,
                     url: item.url.split('?')[0],
                     type: 'file',
                 } as File);
             } else if (item.type === 'dir') {
-                contents.push({
+                // recursively process all subdirectories
+                const dir = {
                     name: item.name,
+                    key: item.path,
                     sha: item.sha,
                     url: item.url.split('?')[0],
                     type: 'dir',
-                } as Directory);
+                } as Directory;
+                const f = await this.getDirContents(dir);
+                await this.processFileTree(f, contents);
             }
-        });
+        }
         return contents;
     }
 
@@ -132,9 +138,7 @@ export default class GithubWrapper {
                     Authorization: this.AUTH_STRING,
                 },
             });
-
-            console.log(this.processFileTree(res.data));
-            return this.processFileTree(res.data);
+            return res.data;
         } catch (error) {
             console.log(error);
             return null;
