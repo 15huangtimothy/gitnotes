@@ -1,13 +1,3 @@
-div.files tbody a {
-    text-decoration: none;
-    color: black;
-    pointer-events: none;
-}
-
-div.files tbody tr .size {
-    display: none;
-}
-
-div.files tbody tr .modified {
-    display: none;
+.filebrowser {
+    max-width: 30%;
 }

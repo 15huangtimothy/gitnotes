@@ -2,7 +2,7 @@ import React from 'react';
 
 import FileBrowser, { Icons } from 'react-keyed-file-browser';
 import './FileBrowser.css';
-// import '../../node_modules/react-keyed-file-browser/dist/react-keyed-file-browser.css';
+import '../../node_modules/react-keyed-file-browser/dist/react-keyed-file-browser.css';
 
 export default class NestedFileBrowser extends React.Component {
     constructor(props) {
@@ -12,13 +12,7 @@ export default class NestedFileBrowser extends React.Component {
         };
     }
 
-    componentDidMount() {
-        const links = document.querySelectorAll('div.files tbody a');
-        links.forEach((link) => {
-            link.removeAttribute('href');
-            link.removeAttribute('download');
-        });
-    }
+    componentDidMount() {}
 
     handleCreateFolder = (key) => {
         this.setState((state) => {

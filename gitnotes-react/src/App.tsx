@@ -2,15 +2,15 @@ import React from 'react';
 import './App.css';
 import EditorWrapper from './EditorWrapper/EditorWrapper';
 import Login from './Login/Login';
-import GithubWrapper from './services/GithubWrapper';
-import NestedFileBrowser from './FileBrowser/FileBrowser';
+import GithubWrapper, { Item, Directory, File } from './services/GithubWrapper';
+import FileBrowser from './FileBrowser/FileBrowser';
 
 export type Props = {};
 
 type State = {
     github: GithubWrapper;
     authorized: boolean;
-    files: Array<any>;
+    files: Array<Item>;
 };
 
 export default class App extends React.Component<Props, State> {
@@ -36,7 +36,6 @@ export default class App extends React.Component<Props, State> {
     async loadFiles() {
         const repos = await this.state.github.getRepos();
         const files = await this.state.github.getRepoContents(repos[8]);
-
         this.setState({
             files: files,
         });
@@ -54,7 +53,7 @@ export default class App extends React.Component<Props, State> {
     /** Main page component */
     main() {
         // return <EditorWrapper />;
-        return <NestedFileBrowser files={this.state.files} />;
+        return <FileBrowser files={this.state.files} />;
     }
 
     render() {

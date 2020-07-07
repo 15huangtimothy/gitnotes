@@ -6,21 +6,23 @@ export type Repo = {
     url: string;
 };
 
-export type Directory = {
+export type Item = {
     name: string;
-    key: string;
+    path: string;
     sha: string;
     url: string;
-    type: 'dir';
+    depth: number;
+    type: string;
 };
 
-export type File = {
-    name: string;
-    key: string;
-    sha: string;
-    url: string;
+export interface Directory extends Item {
+    contents: Array<Item>;
+    type: 'dir';
+}
+
+export interface File extends Item {
     type: 'file';
-};
+}
 
 /** Github API Wrapper for gitnotes*/
 export default class GithubWrapper {
@@ -88,8 +90,8 @@ export default class GithubWrapper {
                     Authorization: this.AUTH_STRING,
                 },
             });
-            let contents = [];
-            await this.processFileTree(res.data, contents);
+            let contents: Array<Item> = [];
+            await this.processFileTree(res.data, contents, 0);
             return contents;
         } catch (error) {
             console.log(error);
@@ -101,27 +103,29 @@ export default class GithubWrapper {
      * Processes items into File and Directory objects and appends to a given array of Files
      * @param data: Array of JSON objects containing files and directories
      */
-    async processFileTree(data: Array<any>, contents: Array<File>) {
+    async processFileTree(data: Array<Item>, contents: Array<Item>, depth: number) {
         for (const item of data) {
             if (item.type === 'file') {
                 contents.push({
                     name: item.name,
-                    key: item.path,
+                    path: item.path,
                     sha: item.sha,
                     url: item.url.split('?')[0],
+                    depth: depth,
                     type: 'file',
                 } as File);
             } else if (item.type === 'dir') {
                 // recursively process all subdirectories
-                const dir = {
+                const f = await this.getDirContents(item.url);
+                contents.push({
                     name: item.name,
-                    key: item.path,
+                    path: item.path,
                     sha: item.sha,
                     url: item.url.split('?')[0],
+                    depth: depth,
+                    contents: await this.processFileTree(f, [], depth + 1),
                     type: 'dir',
-                } as Directory;
-                const f = await this.getDirContents(dir);
-                await this.processFileTree(f, contents);
+                } as Directory);
             }
         }
         return contents;
@@ -129,11 +133,11 @@ export default class GithubWrapper {
 
     /**
      * Returns a list of contents of a given directory
-     * @param dir: Directory object
+     * @param url: Directory URL
      */
-    async getDirContents(dir: Directory) {
+    async getDirContents(url: string) {
         try {
-            const res = await Axios.get(dir.url, {
+            const res = await Axios.get(url, {
                 headers: {
                     Authorization: this.AUTH_STRING,
                 },
