@@ -1,4 +1,6 @@
 # gitnotes
 
 
-Markdown Editor Library: https://github.com/outline/rich-markdown-editor/
+WORK IN PROGRESS
+
+A browser-based digital markdown notebook with Github-integration.
