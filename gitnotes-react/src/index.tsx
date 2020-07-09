@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './font-awesome-4.7.0/css/font-awesome.min.css';
-import './index.css';
+import './reset.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 

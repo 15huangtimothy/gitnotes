@@ -4,6 +4,7 @@ import EditorWrapper from './EditorWrapper/EditorWrapper';
 import Login from './Login/Login';
 import GithubWrapper, { Item, Directory, File } from './services/GithubWrapper';
 import FileBrowser from './FileBrowser/FileBrowser';
+import Split from 'react-split';
 
 export type Props = {};
 
@@ -53,7 +54,23 @@ export default class App extends React.Component<Props, State> {
     /** Main page component */
     main() {
         // return <EditorWrapper />;
-        return <FileBrowser files={this.state.files} />;
+        return (
+            <Split
+                sizes={[15, 85]}
+                minSize={[perc2pix(12), perc2pix(25)]}
+                gutterSize={5}
+                dragInterval={1}
+                direction="horizontal"
+                cursor="col-resize"
+            >
+                <div className="split" id="panel1">
+                    <FileBrowser files={this.state.files} />
+                </div>
+                <div className="split" id="panel2">
+                    <EditorWrapper />
+                </div>
+            </Split>
+        );
     }
 
     render() {
@@ -64,3 +81,7 @@ export default class App extends React.Component<Props, State> {
         );
     }
 }
+
+const perc2pix = (perc) => {
+    return (window.innerWidth * perc) / 100;
+};
