@@ -1,46 +1,74 @@
-.split {
-    /* display: inline-block; */
-    float: left;
-}
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
-.splitter {
-    height: 100%;
-}
-.gutter {
-    /* display: inline-block; */
-    float: left;
-    cursor: col-resize;
-    width: 100%;
-    height: 100%;
-    background: red;
-}
+@import 'colors.css';
 
+html,
+body,
 #root {
     height: 100%;
 }
 
-.App {
-    height: 100%;
+body {
+    font-family: 'Lato', 'Helvetica', 'Arial', 'sans-serif';
+    background-color: var(--dark-primary);
 }
 
-.App > div {
-    height: 100%;
-}
-
-/* html,
-body,
 .App,
-.App > div {
-    height: 100%;
-} */
-/* html, */
-
-html,
-body {
+.App > div,
+.splitter {
     height: 100%;
 }
-body {
-    width: 100%;
 
-    background-color: gray;
+.split {
+    float: left;
+    height: 100%;
+}
+
+.gutter {
+    float: left;
+    cursor: col-resize;
+    height: 100%;
+    /* background: var(--light-gray); */
+}
+
+.hero {
+    margin-top: 10em;
+}
+
+.hero h1 {
+    margin: 0.5em auto;
+    font-size: 5em;
+    font-weight: 800;
+    color: var(--green-primary);
+}
+
+.hero h3 {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.hero .login-btn {
+    margin-top: 3em;
+    text-transform: none;
+}
+
+.hero .login-btn i {
+    padding-right: 0.5em;
+}
+
+#root .appbar {
+    background-color: var(--dark-primary);
+}
+
+#root .appbar h3 {
+    font-weight: 800;
+    font-size: 1.25em;
+    color: var(--green-primary);
+    margin: 0 auto;
+}
+
+#filebrowser {
+    background-color: var(--dark-secondary);
+    color: var(--white);
 }

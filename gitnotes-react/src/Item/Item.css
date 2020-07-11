@@ -1,4 +1,6 @@
 .item {
+    font-size: 0.9em;
+    margin: 0.3em 0.1em;
     padding: 0.3em 0.5em;
     cursor: pointer;
     -moz-user-select: none;
@@ -8,5 +10,6 @@
 }
 
 .item i {
+    font-size: 1.1em;
     padding-right: 0.5em;
 }

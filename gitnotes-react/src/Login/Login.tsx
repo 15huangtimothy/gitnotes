@@ -1,5 +1,6 @@
 import React from 'react';
 import Axios from 'axios';
+import { Button } from '@material-ui/core';
 
 export type LoginProps = {
     login_callback: Function;
@@ -41,15 +42,19 @@ export default class Login extends React.Component<LoginProps, LoginState> {
 
     render() {
         return (
-            <div>
-                <a
+            <React.Fragment>
+                <Button
+                    className="login-btn"
+                    variant="contained"
                     href={`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=repo%20read:user&redirect_uri=${process.env.REACT_APP_REDIRECT_URL}`}
                 >
-                    Login
-                </a>
+                    <i className="fa fa-github"></i>
+                    Sign in with GitHub
+                </Button>
+
                 {this.state.status === 'error' && <h2>Login error. Try again</h2>}
                 {this.state.status === 'authorized' && <h2>Login successful</h2>}
-            </div>
+            </React.Fragment>
         );
     }
 }

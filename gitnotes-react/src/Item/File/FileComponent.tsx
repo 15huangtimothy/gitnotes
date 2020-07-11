@@ -11,7 +11,7 @@ export default class FileComponent extends ItemComponent<FileProps, {}> {
     render() {
         return (
             <div className="file item" key={this.props.path}>
-                <i className="fa fa-file-o" aria-hidden="true"></i>
+                <i className="fa fa-file" aria-hidden="true"></i>
                 {this.props.name}
             </div>
         );

@@ -77,11 +77,11 @@ export default class DirectoryComponent extends ItemComponent<DirProps, DirState
         }
         return (
             <div className="dir item" key={this.props.path}>
-                <div onDoubleClick={this.toggleOpen}>
+                <div onClick={this.toggleOpen}>
                     {this.state.open ? (
-                        <i className="fa fa-folder-open-o" aria-hidden="true"></i>
+                        <i className="fa fa-folder-open" aria-hidden="true"></i>
                     ) : (
-                        <i className="fa fa-folder-o" aria-hidden="true"></i>
+                        <i className="fa fa-folder" aria-hidden="true"></i>
                     )}
                     {this.props.name}
                 </div>
