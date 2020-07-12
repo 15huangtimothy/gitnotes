@@ -2,7 +2,7 @@ import React from 'react';
 import Axios from 'axios';
 import EditorWrapper from './EditorWrapper/EditorWrapper';
 import Login from './Login/Login';
-import GithubWrapper, { Item, Directory, File } from './services/GithubWrapper';
+import GithubWrapper, { Item, Directory, File, Repo } from './services/GithubWrapper';
 import FileBrowser from './FileBrowser/FileBrowser';
 import Split from 'react-split';
 import { AppBar, Toolbar, Container } from '@material-ui/core';
@@ -24,6 +24,8 @@ export default class App extends React.Component<Props, State> {
             authorization_status: 'unauthorized',
             files: null,
         };
+
+        this.loadFiles = this.loadFiles.bind(this);
     }
 
     componentDidMount() {
@@ -43,8 +45,7 @@ export default class App extends React.Component<Props, State> {
                     github: new GithubWrapper(response.data.token),
                 });
                 console.log('User authorized');
-                await this.loadFiles();
-                await this.setState({ authorization_status: 'authorized' });
+                this.setState({ authorization_status: 'authorized' });
             } else {
                 this.setState({ authorization_status: 'error' });
                 console.log('Login error');
@@ -52,13 +53,16 @@ export default class App extends React.Component<Props, State> {
         }
     }
 
-    async loadFiles() {
-        const repos = await this.state.github.getRepos();
-        const files = await this.state.github.getRepoContents(repos[8]);
+    async loadFiles(repo: Repo) {
+        const files = await this.state.github.getRepoContents(repo);
         this.setState({
             files: files,
         });
-        console.log('asdf');
+        // const repos = await this.state.github.getRepos();
+        // const files = await this.state.github.getRepoContents(repos[8]);
+        // this.setState({
+        //     files: files,
+        // });
     }
 
     /**
@@ -96,7 +100,11 @@ export default class App extends React.Component<Props, State> {
                     cursor="col-resize"
                 >
                     <div className="split" id="filebrowser">
-                        <FileBrowser files={this.state.files} />
+                        <FileBrowser
+                            files={this.state.files}
+                            loadFiles={this.loadFiles}
+                            github={this.state.github}
+                        />
                     </div>
                     <div className="split" id="editor">
                         <EditorWrapper />
@@ -109,7 +117,7 @@ export default class App extends React.Component<Props, State> {
     render() {
         return (
             <div className="App">
-                {this.state.authorization_status === 'authorized' && this.state.files
+                {this.state.authorization_status === 'authorized'
                     ? this.main()
                     : this.login()}
             </div>

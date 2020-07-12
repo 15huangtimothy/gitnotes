@@ -107,10 +107,6 @@ body {
     overflow: scroll;
 }
 
-#filebrowser .fb-appbar {
-    background-color: var(--dark-secondary);
-}
-
 /* Hide scrollbar for Chrome, Safari and Opera */
 #filebrowser::-webkit-scrollbar {
     display: none;

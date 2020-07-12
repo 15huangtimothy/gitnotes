@@ -1,37 +1,121 @@
 import React from 'react';
-import { Item, File, Directory } from '../services/GithubWrapper';
+import './FileBrowser.css';
+import GithubWrapper, { Item, File, Directory, Repo } from '../services/GithubWrapper';
 import { FileComponent, DirectoryComponent } from '../Item';
-import { AppBar, Toolbar } from '@material-ui/core';
+import { AppBar, Toolbar, Button, Menu, MenuItem } from '@material-ui/core';
 
 type FBProps = {
     files: Array<Item>;
+    loadFiles: Function;
+    github: GithubWrapper;
 };
 
-type FBState = { files: Array<Item> };
+type FBState = {
+    repoMenuAnchor: Element;
+    repos_loaded: boolean;
+    repos: Array<Repo>;
+    repo_selected: Repo;
+};
 
 export default class FileBrowser extends React.Component<FBProps, FBState> {
+    myRef = null;
     constructor(props: FBProps) {
         super(props);
-        this.state = { files: this.props.files };
+        this.state = {
+            repoMenuAnchor: null,
+            repos_loaded: false,
+            repos: null,
+            repo_selected: null,
+        };
+
+        this.handleRepoMenuOpen = this.handleRepoMenuOpen.bind(this);
+        this.getRepos = this.getRepos.bind(this);
+        this.handleRepoMenuClose = this.handleRepoMenuClose.bind(this);
+        this.handleRepoSelect = this.handleRepoSelect.bind(this);
+    }
+
+    handleRepoMenuOpen(e: any) {
+        if (!this.state.repos) {
+            this.getRepos();
+        } else {
+            this.setState({ repos_loaded: true });
+        }
+        this.setState({ repoMenuAnchor: e.currentTarget });
+    }
+
+    async getRepos() {
+        console.log('fetching repos');
+        const repos = await this.props.github.getRepos();
+        this.setState({ repos: repos, repos_loaded: true });
+    }
+
+    handleRepoMenuClose() {
+        this.setState({ repoMenuAnchor: null, repos_loaded: false });
+    }
+
+    handleRepoSelect(e: any) {
+        const index: number = e.currentTarget.getAttribute('data-key');
+        const repo_selected: Repo = this.state.repos[index];
+        this.props.loadFiles(repo_selected);
+        this.setState({ repo_selected });
+        this.handleRepoMenuClose();
+    }
+
+    /**** JSX FRAGMENTS ****/
+    repoMenu() {
+        return (
+            <React.Fragment>
+                <Button
+                    className="repo-btn"
+                    variant="contained"
+                    onClick={this.handleRepoMenuOpen}
+                >
+                    {this.state.repo_selected
+                        ? this.state.repo_selected.name
+                        : 'Choose Repository'}
+                    <i className="fa fa-caret-down" aria-hidden="true"></i>
+                </Button>
+                {this.state.repos_loaded && (
+                    <Menu
+                        id="repo-menu"
+                        anchorEl={this.state.repoMenuAnchor}
+                        keepMounted
+                        open={this.state.repos_loaded}
+                        onClose={this.handleRepoMenuClose}
+                    >
+                        {this.state.repos.map((r, index) => (
+                            <MenuItem
+                                key={index}
+                                data-key={index}
+                                className="repo-menu-item"
+                                onClick={this.handleRepoSelect}
+                            >
+                                {r.name}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                )}
+            </React.Fragment>
+        );
     }
 
     render() {
         return (
             <React.Fragment>
-                <AppBar position="sticky" className="fb-appbar">
-                    <Toolbar variant="dense">
-                        <h2>Portfolio</h2>
-                    </Toolbar>
+                <AppBar position="sticky" id="fb-appbar">
+                    <Toolbar variant="dense">{this.repoMenu()}</Toolbar>
                 </AppBar>
-                <DirectoryComponent
-                    name="root"
-                    path="/"
-                    sha="root"
-                    url="/"
-                    depth={-1}
-                    contents={this.props.files}
-                    root
-                />
+                {this.props.files && (
+                    <DirectoryComponent
+                        name="root"
+                        path="/"
+                        sha="root"
+                        url="/"
+                        depth={-1}
+                        contents={this.props.files}
+                        root
+                    />
+                )}
             </React.Fragment>
         );
     }

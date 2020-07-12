@@ -1,3 +1,22 @@
-.filebrowser {
-    max-width: 30%;
+@import '../colors.css';
+
+#root #fb-appbar {
+    background-color: var(--dark-secondary);
+}
+
+#root .repo-btn {
+    text-transform: none;
+    background-color: inherit;
+    box-shadow: none;
+    color: var(--white);
+    display: flex;
+    padding-left: 0;
+}
+
+#root .repo-btn:hover {
+    background-color: var(--dark-secondary-darken);
+}
+
+.repo-btn i {
+    padding-left: 0.2em;
 }
