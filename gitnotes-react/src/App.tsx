@@ -1,4 +1,5 @@
 import React from 'react';
+import Axios from 'axios';
 import EditorWrapper from './EditorWrapper/EditorWrapper';
 import Login from './Login/Login';
 import GithubWrapper, { Item, Directory, File } from './services/GithubWrapper';
@@ -11,7 +12,7 @@ export type Props = {};
 
 type State = {
     github: GithubWrapper;
-    authorized: boolean;
+    authorization_status: string;
     files: Array<Item>;
 };
 
@@ -20,19 +21,35 @@ export default class App extends React.Component<Props, State> {
         super(props);
         this.state = {
             github: null,
-            authorized: false,
+            authorization_status: 'unauthorized',
             files: null,
         };
-
-        // Bind callbacks
-        this.loginCallback = this.loginCallback.bind(this);
     }
 
-    /** Callback when logged in successfully to Github API */
-    loginCallback(token: string) {
-        this.setState({ github: new GithubWrapper(token), authorized: true });
-        console.log('User authorized');
-        this.loadFiles();
+    componentDidMount() {
+        this.authGitHub();
+    }
+
+    /** Send Gatekeeper request to get Github OAuth token */
+    async authGitHub() {
+        const code = new URL(window.location.href).searchParams.get('code');
+        if (code) {
+            this.setState({ authorization_status: 'loading' });
+            let response = await Axios.get(process.env.REACT_APP_GATEKEEPER_URL + code);
+            window.history.pushState({}, document.title, '/'); // remove github token from url
+
+            if (response.data.token) {
+                this.setState({
+                    github: new GithubWrapper(response.data.token),
+                });
+                console.log('User authorized');
+                await this.loadFiles();
+                await this.setState({ authorization_status: 'authorized' });
+            } else {
+                this.setState({ authorization_status: 'error' });
+                console.log('Login error');
+            }
+        }
     }
 
     async loadFiles() {
@@ -41,6 +58,7 @@ export default class App extends React.Component<Props, State> {
         this.setState({
             files: files,
         });
+        console.log('asdf');
     }
 
     /**
@@ -54,7 +72,7 @@ export default class App extends React.Component<Props, State> {
                 <Container maxWidth="md" className="hero">
                     <h1>GitNotes</h1>
                     <h3>A browser-based Github-integrated digital markdown notebook</h3>
-                    <Login login_callback={this.loginCallback} />
+                    <Login status={this.state.authorization_status} />
                 </Container>
             </React.Fragment>
         );
@@ -62,7 +80,6 @@ export default class App extends React.Component<Props, State> {
 
     /** Main page component */
     main() {
-        // return <EditorWrapper />;
         return (
             <React.Fragment>
                 <AppBar position="static" className="appbar">
@@ -79,11 +96,6 @@ export default class App extends React.Component<Props, State> {
                     cursor="col-resize"
                 >
                     <div className="split" id="filebrowser">
-                        <AppBar position="static" className="appbar">
-                            <Toolbar variant="dense">
-                                <h2>Portfolio</h2>
-                            </Toolbar>
-                        </AppBar>
                         <FileBrowser files={this.state.files} />
                     </div>
                     <div className="split" id="editor">
@@ -97,7 +109,9 @@ export default class App extends React.Component<Props, State> {
     render() {
         return (
             <div className="App">
-                {this.state.authorized && this.state.files ? this.main() : this.login()}
+                {this.state.authorization_status === 'authorized' && this.state.files
+                    ? this.main()
+                    : this.login()}
             </div>
         );
     }
@@ -106,6 +120,6 @@ export default class App extends React.Component<Props, State> {
 /*
 UTILITY FUNCTIONS
 */
-const perc2pix = (perc) => {
+const perc2pix = (perc: number) => {
     return (window.innerWidth * perc) / 100;
 };

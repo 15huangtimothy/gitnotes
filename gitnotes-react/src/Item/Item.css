@@ -1,5 +1,5 @@
 .item {
-    font-size: 0.9em;
+    font-size: 0.8rem;
     margin: 0.3em 0.1em;
     padding: 0.3em 0.5em;
     cursor: pointer;
@@ -10,6 +10,6 @@
 }
 
 .item i {
-    font-size: 1.1em;
+    font-size: 1rem;
     padding-right: 0.5em;
 }
