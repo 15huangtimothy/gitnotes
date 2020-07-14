@@ -161,7 +161,6 @@ export default class GithubWrapper {
                 },
             });
 
-            console.log(atob(res.data.content));
             return atob(res.data.content);
         } catch (error) {
             console.log(error);

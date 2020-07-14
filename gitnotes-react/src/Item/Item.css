@@ -13,3 +13,11 @@
     font-size: 1rem;
     padding-right: 0.5em;
 }
+
+.item p {
+    display: inline;
+}
+
+.item .selected {
+    font-weight: 800;
+}

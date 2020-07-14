@@ -37,6 +37,8 @@ export default class DirectoryComponent extends ItemComponent<DirProps, DirState
                 url={item.url}
                 depth={item.depth}
                 key={item.path}
+                file={item}
+                handleFileSelect={this.props.handleFileSelect}
             />
         );
     }
@@ -53,6 +55,7 @@ export default class DirectoryComponent extends ItemComponent<DirProps, DirState
                 contents={item.contents}
                 key={item.path}
                 root={false}
+                handleFileSelect={this.props.handleFileSelect}
             />
         );
     }

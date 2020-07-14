@@ -66,19 +66,18 @@ body {
     padding-right: 0.5em;
 }
 
-.login-btn .progress-show {
-    position: relative;
+#root .progress-show {
+    position: absolute;
     opacity: 1;
     z-index: 1;
-    left: -50%;
     color: var(--green-primary);
 }
 
-.login-btn .progress-hide {
+#root .progress-hide {
+    display: none;
     opacity: 0;
-    position: relative;
+    position: absolute;
     z-index: 1;
-    left: -50%;
     color: var(--green-primary);
 }
 

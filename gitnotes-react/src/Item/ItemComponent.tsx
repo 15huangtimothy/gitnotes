@@ -7,6 +7,7 @@ export type ItemProps = {
     sha: string;
     url: string;
     depth: number;
+    handleFileSelect: Function;
 };
 
 export default class ItemComponent<P extends ItemProps, S> extends React.Component<

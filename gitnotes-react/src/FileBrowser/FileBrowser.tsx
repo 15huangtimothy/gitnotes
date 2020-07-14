@@ -2,12 +2,22 @@ import React from 'react';
 import './FileBrowser.css';
 import GithubWrapper, { Item, File, Directory, Repo } from '../services/GithubWrapper';
 import { FileComponent, DirectoryComponent } from '../Item';
-import { AppBar, Toolbar, Button, Menu, MenuItem } from '@material-ui/core';
+import {
+    AppBar,
+    Toolbar,
+    Button,
+    Menu,
+    MenuItem,
+    CircularProgress,
+} from '@material-ui/core';
 
 type FBProps = {
     files: Array<Item>;
     loadFiles: Function;
     github: GithubWrapper;
+    loading: boolean;
+    fileSelected: Function;
+    selected: FileComponent;
 };
 
 type FBState = {
@@ -32,6 +42,7 @@ export default class FileBrowser extends React.Component<FBProps, FBState> {
         this.getRepos = this.getRepos.bind(this);
         this.handleRepoMenuClose = this.handleRepoMenuClose.bind(this);
         this.handleRepoSelect = this.handleRepoSelect.bind(this);
+        this.handleFileSelect = this.handleFileSelect.bind(this);
     }
 
     handleRepoMenuOpen(e: any) {
@@ -59,6 +70,14 @@ export default class FileBrowser extends React.Component<FBProps, FBState> {
         this.props.loadFiles(repo_selected);
         this.setState({ repo_selected });
         this.handleRepoMenuClose();
+    }
+
+    async handleFileSelect(f: File, fc: FileComponent) {
+        if (this.props.selected) {
+            this.props.selected.toggleSelected();
+        }
+        fc.toggleSelected();
+        this.props.fileSelected(f, fc);
     }
 
     /**** JSX FRAGMENTS ****/
@@ -105,6 +124,13 @@ export default class FileBrowser extends React.Component<FBProps, FBState> {
                 <AppBar position="sticky" id="fb-appbar">
                     <Toolbar variant="dense">{this.repoMenu()}</Toolbar>
                 </AppBar>
+                <CircularProgress
+                    className={
+                        'fb-progress ' +
+                        (this.props.loading ? 'progress-show' : 'progress-hide')
+                    }
+                    size={'2em'}
+                />
                 {this.props.files && (
                     <DirectoryComponent
                         name="root"
@@ -114,6 +140,7 @@ export default class FileBrowser extends React.Component<FBProps, FBState> {
                         depth={-1}
                         contents={this.props.files}
                         root
+                        handleFileSelect={this.handleFileSelect}
                     />
                 )}
             </React.Fragment>

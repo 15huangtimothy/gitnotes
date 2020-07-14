@@ -4,9 +4,11 @@ import EditorWrapper from './EditorWrapper/EditorWrapper';
 import Login from './Login/Login';
 import GithubWrapper, { Item, Directory, File, Repo } from './services/GithubWrapper';
 import FileBrowser from './FileBrowser/FileBrowser';
+import { FileComponent } from './Item';
 import Split from 'react-split';
 import { AppBar, Toolbar, Container } from '@material-ui/core';
 import './App.css';
+import { toPlainObject } from 'lodash';
 
 export type Props = {};
 
@@ -14,6 +16,9 @@ type State = {
     github: GithubWrapper;
     authorization_status: string;
     files: Array<Item>;
+    loading_files: boolean;
+    selected_file: File;
+    selected_file_c: FileComponent;
 };
 
 export default class App extends React.Component<Props, State> {
@@ -23,9 +28,13 @@ export default class App extends React.Component<Props, State> {
             github: null,
             authorization_status: 'unauthorized',
             files: null,
+            loading_files: false,
+            selected_file: null,
+            selected_file_c: null,
         };
 
         this.loadFiles = this.loadFiles.bind(this);
+        this.fileSelected = this.fileSelected.bind(this);
     }
 
     componentDidMount() {
@@ -54,15 +63,24 @@ export default class App extends React.Component<Props, State> {
     }
 
     async loadFiles(repo: Repo) {
+        this.setState({
+            files: null,
+            loading_files: true,
+        });
         const files = await this.state.github.getRepoContents(repo);
         this.setState({
             files: files,
+            loading_files: false,
         });
         // const repos = await this.state.github.getRepos();
         // const files = await this.state.github.getRepoContents(repos[8]);
         // this.setState({
         //     files: files,
         // });
+    }
+
+    async fileSelected(f: File, fc: FileComponent) {
+        this.setState({ selected_file: f, selected_file_c: fc });
     }
 
     /**
@@ -104,10 +122,16 @@ export default class App extends React.Component<Props, State> {
                             files={this.state.files}
                             loadFiles={this.loadFiles}
                             github={this.state.github}
+                            loading={this.state.loading_files}
+                            fileSelected={this.fileSelected}
+                            selected={this.state.selected_file_c}
                         />
                     </div>
                     <div className="split" id="editor">
-                        <EditorWrapper />
+                        <EditorWrapper
+                            file={this.state.selected_file}
+                            github={this.state.github}
+                        />
                     </div>
                 </Split>
             </React.Fragment>

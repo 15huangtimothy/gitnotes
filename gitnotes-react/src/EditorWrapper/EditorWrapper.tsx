@@ -1,9 +1,11 @@
 import React from 'react';
 import './EditorWrapper.css';
 import Editor from 'rich-markdown-editor';
+import GithubWrapper, { File } from '../services/GithubWrapper';
+
 import { debounce } from 'lodash';
 
-export type EditorProps = {};
+export type EditorProps = { file: File; github: GithubWrapper };
 
 type EditorState = {
     dark: boolean;
@@ -24,12 +26,17 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
     }
 
     /** Load local markdown file */
-    loadFile = async () => {
-        const file = require('../test.md');
-        await fetch(file)
-            .then((response) => response.text())
-            .then((result) => this.setState({ value: result }));
-    };
+    async loadFile() {
+        // const file = require('../test.md');
+        // await fetch(file)
+        //     .then((response) => response.text())
+        //     .then((result) => this.setState({ value: result }));
+        if (this.props.file) {
+            const file = await this.props.github.getFile(this.props.file);
+            this.setState({ value: file });
+            console.log(file);
+        }
+    }
 
     /** Toggles light/dark theme */
     handleToggleDark = () => {
