@@ -2,10 +2,14 @@ import React from 'react';
 import './EditorWrapper.css';
 import Editor from 'rich-markdown-editor';
 import GithubWrapper, { File } from '../services/GithubWrapper';
+import { AppBar, BottomNavigation, Button } from '@material-ui/core';
 
 import { debounce } from 'lodash';
 
-export type EditorProps = { file: File; github: GithubWrapper };
+export type EditorProps = {
+    file: File;
+    github: GithubWrapper;
+};
 
 type EditorState = {
     dark: boolean;
@@ -25,7 +29,7 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
         this.loadFile();
     }
 
-    /** Load local markdown file */
+    /** Load file */
     async loadFile() {
         // const file = require('../test.md');
         // await fetch(file)
@@ -34,7 +38,7 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
         if (this.props.file) {
             const file = await this.props.github.getFile(this.props.file);
             this.setState({ value: file });
-            console.log(file);
+            console.log('file loaded');
         }
     }
 
@@ -53,10 +57,11 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
     }, 250);
 
     handleUpdateValue = () => {
-        const existing = localStorage.getItem('saved') || '';
-        const value = `${existing}\n\nedit!`;
-        localStorage.setItem('saved', value);
-        this.setState({ value });
+        console.log(this.props.file);
+        // const existing = localStorage.getItem('saved') || '';
+        // const value = `${existing}\n\nedit!`;
+        // localStorage.setItem('saved', value);
+        // this.setState({ value });
     };
 
     render() {
@@ -64,21 +69,28 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
         if (body) body.style.backgroundColor = this.state.dark ? '#181A1B' : '#FFF';
         return (
             <div className="EditorWrapper">
-                <div className="toolbar">
+                {/* <div className="toolbar">
                     <button type="button" onClick={this.handleToggleDark}>
                         {this.state.dark ? 'Light theme' : 'Dark theme'}
                     </button>{' '}
                     <button type="button" onClick={this.handleUpdateValue}>
                         Save
                     </button>
-                </div>
+                </div> */}
                 <Editor
                     value={this.state.value}
-                    defaultValue="Hello world!"
+                    defaultValue=""
                     onChange={this.handleChange}
                     dark={this.state.dark}
                     autoFocus
                 />
+                <Button
+                    className="commit-btn"
+                    variant="contained"
+                    onClick={this.handleUpdateValue}
+                >
+                    Commit
+                </Button>
             </div>
         );
     }

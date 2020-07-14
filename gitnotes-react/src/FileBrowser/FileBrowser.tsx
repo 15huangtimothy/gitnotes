@@ -17,7 +17,6 @@ type FBProps = {
     github: GithubWrapper;
     loading: boolean;
     fileSelected: Function;
-    selected: FileComponent;
 };
 
 type FBState = {
@@ -25,10 +24,10 @@ type FBState = {
     repos_loaded: boolean;
     repos: Array<Repo>;
     repo_selected: Repo;
+    selected: FileComponent;
 };
 
 export default class FileBrowser extends React.Component<FBProps, FBState> {
-    myRef = null;
     constructor(props: FBProps) {
         super(props);
         this.state = {
@@ -36,6 +35,7 @@ export default class FileBrowser extends React.Component<FBProps, FBState> {
             repos_loaded: false,
             repos: null,
             repo_selected: null,
+            selected: null,
         };
 
         this.handleRepoMenuOpen = this.handleRepoMenuOpen.bind(this);
@@ -65,6 +65,13 @@ export default class FileBrowser extends React.Component<FBProps, FBState> {
     }
 
     handleRepoSelect(e: any) {
+        // close current file
+        if (this.state.selected) {
+            this.state.selected.toggleSelected();
+        }
+        this.setState({ selected: null });
+        this.props.fileSelected(null);
+
         const index: number = e.currentTarget.getAttribute('data-key');
         const repo_selected: Repo = this.state.repos[index];
         this.props.loadFiles(repo_selected);
@@ -73,11 +80,12 @@ export default class FileBrowser extends React.Component<FBProps, FBState> {
     }
 
     async handleFileSelect(f: File, fc: FileComponent) {
-        if (this.props.selected) {
-            this.props.selected.toggleSelected();
+        if (this.state.selected) {
+            this.state.selected.toggleSelected();
         }
         fc.toggleSelected();
-        this.props.fileSelected(f, fc);
+        this.setState({ selected: fc });
+        this.props.fileSelected(f);
     }
 
     /**** JSX FRAGMENTS ****/

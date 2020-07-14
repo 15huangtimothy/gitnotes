@@ -8,7 +8,6 @@ import { FileComponent } from './Item';
 import Split from 'react-split';
 import { AppBar, Toolbar, Container } from '@material-ui/core';
 import './App.css';
-import { toPlainObject } from 'lodash';
 
 export type Props = {};
 
@@ -18,7 +17,6 @@ type State = {
     files: Array<Item>;
     loading_files: boolean;
     selected_file: File;
-    selected_file_c: FileComponent;
 };
 
 export default class App extends React.Component<Props, State> {
@@ -30,7 +28,6 @@ export default class App extends React.Component<Props, State> {
             files: null,
             loading_files: false,
             selected_file: null,
-            selected_file_c: null,
         };
 
         this.loadFiles = this.loadFiles.bind(this);
@@ -79,8 +76,8 @@ export default class App extends React.Component<Props, State> {
         // });
     }
 
-    async fileSelected(f: File, fc: FileComponent) {
-        this.setState({ selected_file: f, selected_file_c: fc });
+    fileSelected(f: File) {
+        this.setState({ selected_file: f });
     }
 
     /**
@@ -124,11 +121,11 @@ export default class App extends React.Component<Props, State> {
                             github={this.state.github}
                             loading={this.state.loading_files}
                             fileSelected={this.fileSelected}
-                            selected={this.state.selected_file_c}
                         />
                     </div>
                     <div className="split" id="editor">
                         <EditorWrapper
+                            key={this.state.selected_file && this.state.selected_file.sha}
                             file={this.state.selected_file}
                             github={this.state.github}
                         />

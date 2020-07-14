@@ -6,3 +6,18 @@
 
 .toolbar {
 }
+
+.footer {
+    background-color: var(--green-primary);
+}
+
+#root .commit-btn {
+    position: absolute;
+    bottom: 3em;
+    right: 6em;
+    text-transform: none;
+    padding: 1em 1.5em;
+    background-color: var(--green-primary);
+    color: var(--white);
+    font-weight: 800;
+}
