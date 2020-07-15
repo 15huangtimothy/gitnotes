@@ -17,12 +17,15 @@ type EditorState = {
 };
 
 export default class EditorWrapper extends React.Component<EditorProps, EditorState> {
+    content: string = '';
     constructor(props: EditorProps) {
         super(props);
         this.state = {
             dark: true, // get from user settings
             value: '',
         };
+
+        this.handleUpdateValue = this.handleUpdateValue.bind(this);
     }
 
     componentDidMount() {
@@ -36,8 +39,10 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
         //     .then((response) => response.text())
         //     .then((result) => this.setState({ value: result }));
         if (this.props.file) {
+            console.log(this.props.file);
             const file = await this.props.github.getFile(this.props.file);
             this.setState({ value: file });
+            this.content = file;
             console.log('file loaded');
         }
     }
@@ -53,7 +58,8 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
     handleChange = debounce((value: any) => {
         const text = value();
         console.log(text);
-        localStorage.setItem('saved', text);
+        // localStorage.setItem('saved', text);
+        this.content = text;
     }, 250);
 
     handleUpdateValue = () => {
@@ -63,6 +69,11 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
         // localStorage.setItem('saved', value);
         // this.setState({ value });
     };
+
+    async handleCommit() {
+        const res = await this.props.github.commitFile(this.props.file, this.content);
+        console.log('committed');
+    }
 
     render() {
         const { body } = document;
@@ -87,7 +98,9 @@ export default class EditorWrapper extends React.Component<EditorProps, EditorSt
                 <Button
                     className="commit-btn"
                     variant="contained"
-                    onClick={this.handleUpdateValue}
+                    onClick={() => {
+                        this.handleCommit();
+                    }}
                 >
                     Commit
                 </Button>

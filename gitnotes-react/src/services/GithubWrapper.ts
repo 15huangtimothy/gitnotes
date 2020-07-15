@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import { Base64 } from 'js-base64';
 
 export type Repo = {
     id: string;
@@ -160,8 +161,27 @@ export default class GithubWrapper {
                     Authorization: this.AUTH_STRING,
                 },
             });
+            return Base64.decode(res.data.content);
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
 
-            return atob(res.data.content);
+    async commitFile(f: File, content: string) {
+        const body = {
+            message: 'gitnotes commit ' + new Date().toString(),
+            content: Base64.encode(content),
+            sha: f.sha,
+        };
+        try {
+            const res = await Axios.put(f.url, body, {
+                headers: {
+                    Authorization: this.AUTH_STRING,
+                    'Content-Type': 'application/json',
+                },
+            });
+            return res;
         } catch (error) {
             console.log(error);
             return null;
